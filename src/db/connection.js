@@ -1,16 +1,30 @@
-require('dotenv').config();
-const mysql = require('mysql2/promise');
+const path = require("path");
 
-/**
- * Tarea 1: Crea y exporta un pool de conexiones MySQL.
- *
- * Usa las siguientes variables de entorno:
- *   DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
- *
- * Configura waitForConnections: true y connectionLimit: 10
- */
+require("dotenv").config({
+  path: path.resolve(__dirname, "../../.env"),
+});
 
-// TODO: crear el pool con mysql.createPool(...)
+const mysql = require("mysql2/promise");
 
-// TODO: exportar el pool
-module.exports = null; // reemplaza null con el pool
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  waitForConnections: true,
+  connectionLimit: 10,
+});
+
+async function testConnection() {
+  try {
+    await pool.getConnection();
+    console.log("✅ Conexión exitosa a la base de datos");
+  } catch (err) {
+    console.error("❌ Error al conectar a la base de datos:", err.message);
+  }
+}
+
+testConnection();
+
+module.exports = pool;
