@@ -1,4 +1,4 @@
-const pool = require('./connection');
+const pool = require("./connection");
 
 /**
  * Tarea 4: Implementa las funciones de acceso a datos.
@@ -10,7 +10,10 @@ const pool = require('./connection');
  * @returns {Promise<Array>}
  */
 async function findAll() {
-  // TODO
+  const [articles] = await pool.query(
+    "SELECT * FROM articles WHERE published = 1",
+  );
+  return articles;
 }
 
 /**
@@ -20,6 +23,9 @@ async function findAll() {
  */
 async function findById(id) {
   // TODO
+  const [rows] = await pool.query(`SELECT * FROM articles WHERE id = ?`, [id]);
+  const result = rows[0] ? rows[0] : null;
+  return result;
 }
 
 /**
@@ -29,6 +35,12 @@ async function findById(id) {
  */
 async function create(data) {
   // TODO
+  const [article] = await pool.query(
+    `INSERT INTO articles (title, content, author, published) VALUES (?,?,?,?)`,
+    [data.title, data.content, data.author, data.published ?? 0],
+  );
+  const newArticle = await findById(article.insertId);
+  return newArticle;
 }
 
 /**
@@ -40,6 +52,12 @@ async function create(data) {
  */
 async function update(id, data) {
   // TODO
+  const sql = "UPDATE articles SET title = ? WHERE id = ?";
+  const [result] = await pool.query(sql, [data.title, id]);
+  if (result.affectedRows === 0) {
+    return null;
+  }
+  return await findById(id);
 }
 
 /**
@@ -49,6 +67,9 @@ async function update(id, data) {
  */
 async function remove(id) {
   // TODO
+  const sql = 'DELETE FROM articles WHERE id = ?'
+  const [result] = await pool.query(sql, [id]);
+  return result.affectedRows > 0;
 }
 
 module.exports = { findAll, findById, create, update, remove };
