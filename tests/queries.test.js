@@ -12,7 +12,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await pool.end();
+  // pool.end() se omite aquí; Jest cierra el proceso con --forceExit
+  // para que seed.test.js (que corre después) pueda reutilizar el mismo pool
 });
 
 describe('create', () => {
@@ -54,6 +55,11 @@ describe('update', () => {
     const created = await create({ title: 'Original', content: 'Contenido original válido.', author: 'A', published: 1 });
     const updated = await update(created.id, { title: 'Actualizado' });
     expect(updated.title).toBe('Actualizado');
+  });
+
+  test('devuelve null si no existe', async () => {
+    const result = await update(99999, { title: 'Fantasma' });
+    expect(result).toBeNull();
   });
 });
 
