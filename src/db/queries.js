@@ -44,7 +44,7 @@ async function create(data) {
     `INSERT INTO articles (title, content, author, published) VALUES (?, ?, ?, ?)`,
     [data.title, data.content, data.author, data.published ?? 0],
   )
-  return findById(result.insertId)
+  return { id: result.insertId, ...data, published: data.published ?? 0 }
   // TODO
 }
 
@@ -63,7 +63,8 @@ async function update(id, data) {
   if (result.affectedRows === 0) {
     return null
   }
-  return findById(id)
+
+  return { id, ...data }
   // TODO
 }
 

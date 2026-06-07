@@ -20,7 +20,7 @@ async function seed() {
           article.title,
           article.content,
           article.author,
-          article.published ? 1 : 0,
+          article.published ? true : false,
         ],
       )
     }
