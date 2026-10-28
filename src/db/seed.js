@@ -1,6 +1,6 @@
-require('dotenv').config();
-const pool = require('./connection');
-const articles = require('../../data/articles.json');
+require("dotenv").config();
+const pool = require("./connection");
+const articles = require("../../data/articles.json");
 
 /**
  * Tarea 3: Inserta los artículos de data/articles.json en la tabla articles.
@@ -10,14 +10,24 @@ const articles = require('../../data/articles.json');
  */
 async function seed() {
   // TODO: recorrer articles e insertar cada uno sin duplicar en reruns
-  console.log('✅ Seed completado');
+  const query = `INSERT IGNORE INTO articles (title, content, author, published) VALUES ?`;
+  const values = articles.map((article) => [
+    article.title,
+    article.content,
+    article.author,
+    article.published,
+  ]);
+  const [result] = await pool.query(query, [values]);
+  console.log(
+    `✅ Seed completado, ${result.affectedRows} articulos insertados`,
+  );
 }
 
 if (require.main === module) {
   seed()
     .then(() => process.exit(0))
-    .catch(err => {
-      console.error('❌ Error en seed:', err.message);
+    .catch((err) => {
+      console.error("❌ Error en seed:", err.message);
       process.exit(1);
     });
 }
